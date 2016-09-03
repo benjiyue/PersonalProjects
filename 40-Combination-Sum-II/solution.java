@@ -7,7 +7,7 @@ public class Solution {
 		Arrays.sort(candidates);
 		//then recursively try to generate the sum, except every time you recurse select it but then you set the index to the next unique element
 
-		recurse(candidates, target, res, 0, new LinkedList(),0);
+		recurse(candidates, target, res, 0, new ArrayList<Integer>(candidates.length),0);
 		return res;
 	}
 
@@ -23,15 +23,20 @@ public class Solution {
 		int indexOfLast = index;
 		while(indexOfLast<nums.length&&nums[indexOfLast]==nums[index])
 			indexOfLast++;
-		recurse(nums, target, res, sumSoFar, new LinkedList<Integer>(considered), indexOfLast);
+		recurse(nums, target, res, sumSoFar, considered, indexOfLast);
+		int timesAdded = 0;
 		while(index<indexOfLast){
+		    timesAdded++;
 			considered.add(nums[index]);
 			sumSoFar+=nums[index];
 			if(sumSoFar>target)
-				return;
-			recurse(nums, target, res, sumSoFar, new LinkedList<Integer>(considered), indexOfLast);
+				break;
+			recurse(nums, target, res, sumSoFar, considered, indexOfLast);
 			index++;
 		}
-
+		while(timesAdded>0){
+		    considered.remove(considered.size()-1);
+		    timesAdded--;
+        }
 	}
 }
