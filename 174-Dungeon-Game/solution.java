@@ -1,41 +1,38 @@
 public class Solution {
     public int calculateMinimumHP(int[][] dungeon) {
-        //find a dfs path from top left to bottom right such that the minimum is highest along the path
-        
-        //start from bottom right and work backwards across row,
-        //dp[i][j] = minimum i need here get influenced by in[i][j] and still mke it to the bottom right all while haveing>0
-        //so if in[i][j] >0, then i can have less and still make it so subtrack from min(i+1, j+1);
-        //if in[i][j]<0, then i have to strt with more so add to min (i+1, j+1)
-        
-        //if dp[i][j]<0 then 
-        
-        int row = dungeon.length;
-        int col = dungeon[0].length;
-        
-        if(dungeon==null||row==0||col==0)
+        if(dungeon==null||dungeon.length==0||dungeon[0].length==0)
             return 1;
+            
+        int rows = dungeon.length;
+        int cols = dungeon[0].length;
+        int[][] dp = new int[rows][cols];
+        dp[rows-1][cols-1] = 1- dungeon[rows-1][cols-1]<=0?1:1- dungeon[rows-1][cols-1];
+        for(int i=cols-2;i>=0;i--)
+            dp[rows-1][i] = dp[rows-1][i+1]-dungeon[rows-1][i]<=0?1:dp[rows-1][i+1]-dungeon[rows-1][i];
+        for(int i=rows-2;i>=0;i--)
+            dp[i][cols-1] = dp[i+1][cols-1]-dungeon[i][cols-1]<=0?1:dp[i+1][cols-1]-dungeon[i][cols-1];
         
-        int[][] dp = new int[row][col];
-        //init last column
-        dp[row-1][col-1] = (-1*dungeon[row-1][col-1])+1<=0?1:(-1*dungeon[row-1][col-1])+1;
-        for(int i=row-2;i>=0;i--){
-            int possible = (dungeon[i][col-1]*-1)+dp[i+1][col-1];
-            dp[i][col-1] = possible<=0?1:possible;
-        }
-        //init last row
-        for(int i=col-2;i>=0;i--){
-            int possible = (dungeon[row-1][i]*-1)+dp[row-1][i+1];
-            dp[row-1][i] = possible<=0?1:possible;
-        }
-        
-        for(int i=row-2;i>=0;i--){
-            for(int j=col-2;j>=0;j--){
-                int possible = (-1*dungeon[i][j])+Math.min(dp[i+1][j], dp[i][j+1]);
+        for(int i=rows-2;i>=0;i--){
+            for(int j=cols-2;j>=0;j--){
+                int possible = Math.min(dp[i+1][j], dp[i][j+1])-dungeon[i][j];
                 dp[i][j] = possible<=0?1:possible;
             }
         }
         return dp[0][0];
-            
-   
     }
 }
+
+/*
+-2	-3	3
+-5	-10	1
+10	30	-5
+
+7   5   2
+6   11  5
+1   1   6
+
+for each index iterate to left then go up, bootom right = 1-num[i][j]. each index look at right and look at bottom except for last row and last column 
+if it's <0 then the answer is 1
+dp[i][j] = min(right, bottom)-nums[i][j]
+
+*/
