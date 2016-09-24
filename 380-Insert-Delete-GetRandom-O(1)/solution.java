@@ -38,11 +38,10 @@ public class RandomizedSet {
         
         int index = map.get(val);
         //element to remove is not the last element so we need to swap the last element to the index, we also need to remove it
-        if(index<array.size()-1){
-            int endOfList = array.get(array.size()-1);
-            array.set(index, endOfList);
-            map.put(endOfList, index);
-        }
+        int endOfList = array.get(array.size()-1);
+        array.set(index, endOfList);
+        map.put(endOfList, index);
+        
         //even if i didnt hit the condition it means the element to remove is the last element so remove it anyways.element i the last so we still remove the alst
         array.remove(array.size()-1);
         //we always remove the mapping of the val
