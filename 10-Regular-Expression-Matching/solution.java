@@ -1,49 +1,44 @@
 public class Solution {
     public boolean isMatch(String s, String p) {
-        //you need to look forward as you iterate if the next thing is a * then you match 0 then match 1 at a time if any returns a true then reyurn true,you need two pointers to keep track of lcoation
-        dp = new int[s.length()+1][p.length()+1];
-        return isMatch(s, 0, p, 0);
+        /*
+        it's backtracking, with two poitners into s and p . What we do is that at each index of p we must look forward if it's a *, then we have to match 0 to p.length number of the current iteem, else we match the literal or the . which matches anything, if it is the * condition we try 0, then 1, then2... to the end of the s array and if it fails all the way then return false; else if at anytime it's true wee return true
+        true matches come when both pointers are at the end
+        */
+        if(s==null||p==null)
+            return false;
         
-    }
-    int[][] dp;
-    public boolean isMatch(String s, int sIndex, String p, int pIndex){
-        if(sIndex==s.length()&&pIndex==p.length())
-            return true;
-        if(dp[sIndex][pIndex]>0)
-            return dp[sIndex][pIndex]==1?false:true;
-            
-        //match 0 times or more times
-        if(pIndex+1<p.length()&&p.charAt(pIndex+1)=='*'){
-            int sOrig = sIndex;
-            //match 0 times
-            if(isMatch(s, sIndex, p, pIndex+2))
-                return true;
-            //match 1... times
-            while(sIndex<s.length()&&charsMatch(s, sIndex, p, pIndex)){
-                sIndex++;
-                if(isMatch(s, sIndex, p, pIndex+2))
-                    return true;
-            }
-            dp[sOrig][pIndex] = 1;
-            return false;
-        }else{
-            //match the literal
-            if(charsMatch(s, sIndex, p, pIndex))
-                return isMatch(s, sIndex+1, p, pIndex+1);
-            dp[sIndex][pIndex]=1;
-            return false;
-        }
+        return dfs(s, 0, p, 0);
     }
     
-    public boolean charsMatch(String s, int sIndex, String p, int pIndex){
-        if(sIndex>=s.length()||pIndex>=p.length())
-            return false;
-        char c1 = s.charAt(sIndex);
-        char c2 = p.charAt(pIndex);
-        if(c2=='.')
+    public boolean dfs(String raw, int rawIndex, String pattern, int patternIndex){
+        if(rawIndex==raw.length()&&patternIndex==pattern.length())
             return true;
-        if(c1==c2)
-            return true;
+        
+        //match 0 to the end of raw number if each 
+        if(patternIndex+1<pattern.length()&&pattern.charAt(patternIndex+1)=='*'){
+            //match 0
+            if(dfs(raw, rawIndex, pattern, patternIndex+2))
+                return true;
+            //now try to match as much as needed increasing by one as needed
+            while(isMatch(raw, rawIndex, pattern, patternIndex)){
+                if(dfs(raw, ++rawIndex, pattern, patternIndex+2))
+                    return true;
+            }
+        }else{
+            if(isMatch(raw, rawIndex, pattern, patternIndex)){
+                if(dfs(raw, rawIndex+1, pattern, patternIndex+1))
+                    return true;
+            }
+        }
         return false;
     }
+    
+    public boolean isMatch(String a, int aIndex, String b, int bIndex){
+        if(aIndex>=a.length()||bIndex>=b.length())
+            return false;
+        if(b.charAt(bIndex)=='.')
+            return true;
+        return a.charAt(aIndex)==b.charAt(bIndex);
+    }
+    
 }
