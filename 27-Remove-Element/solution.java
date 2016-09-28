@@ -4,12 +4,25 @@ public class Solution {
         
         if(nums==null||nums.length==0)
             return 0;
-        
-        int nextPos = 0;
-        for(int i=0;i<nums.length;i++){
-            if(nums[i]!=val)
-                nums[nextPos++] = nums[i];
+        /*
+        val=3
+           l
+           h
+        [2,2,2,3]
+        */
+        int low = 0;
+        int high = nums.length-1;
+        while(low<=high){
+            while(low<=high&&nums[low]!=val)
+                low++;
+            while(low<=high&&nums[high]==val)
+                high--;
+            if(low<=high){
+                nums[low] = nums[high];
+                low++;
+                high--;
+            }
         }
-        return nextPos;
+        return low;
     }
 }
