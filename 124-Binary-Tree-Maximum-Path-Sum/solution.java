@@ -8,28 +8,36 @@
  * }
  */
 public class Solution {
-    int maxSum;
+    int maxEver;
     public int maxPathSum(TreeNode root) {
-        //idea is a bottom up approach and upon encounter of a node you either add one of left or right or neither to the node value, then return you own max value, also have a maxsum counter
-        maxSum = Integer.MIN_VALUE;
-        dfs(root);
-        return maxSum;
-    }
-    
-    public int dfs(TreeNode root){
+        
+        /*postorder traversal
+                    10
+                3(3)       -7(1)
+            -99(0)              8(8)
+        1(1)
+        maxEver = 14
+        maxToREturn = 3;
+        */
+        
         if(root==null)
             return 0;
-        int left = dfs(root.left);
-        int right = dfs(root.right);
         
-        int onlyIncludeLeft = left+root.val;//keep going
-        int onlyIncludeRight = right+root.val;//keep going
-        int includeOnlySelf = root.val;//did include me so keep going 
+        maxEver = root.val;
+        postOrder(root);
+        return maxEver;
+    }
+    
+    public int postOrder(TreeNode root){
+        if(root==null)
+            return 0;
         
-        int iAmInflection = root.val+left+right;
+        int left = postOrder(root.left);
+        int right = postOrder(root.right);
         
-        int maxPossible = Math.max(Math.max(onlyIncludeLeft, onlyIncludeRight),includeOnlySelf);
-        maxSum = Math.max(maxSum, Math.max(maxPossible, iAmInflection));
-        return maxPossible>0?maxPossible:0;
+        int maxToReturn = Math.max(root.val+left, Math.max(root.val+right,root.val));
+        int maxValue = Math.max(maxToReturn, left+right+root.val);
+        maxEver = Math.max(maxValue, maxEver);
+        return maxToReturn<0?0:maxToReturn;
     }
 }
