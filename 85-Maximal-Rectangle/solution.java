@@ -1,44 +1,63 @@
 public class Solution {
     public int maximalRectangle(char[][] matrix) {
-        //the idea is that when we only know when to do something when the thing in the stack stops at the current index with the current index being the higher right wall so we then extend the peeked thing back to the previous thing, but that means the thing in the stack must be the something even smaller height as that's how we'll know that it can no longer be extended, so the stack has only increasing heights
+        /*
+        the biggest rectangle in a histogram
+        nm
         
-        //then if increase do calc then push to stack, else simply push
+        max = 6
         
-        //then at end the width for each is from the length-the current index, but if we ever see a 0 then the right becomes that index
+        stack:3,6
+        
+        oo  oo
+        ooo oo
+        ooooooo
+        0123456
+        how to find the largest rectangle in a histogram
+        
+        we use a atack to push if empty or if the current height increases. we pop off while the current thing is less than the peek height and the length that that thing couldve extended is equal to the peek position and the current iterator position
+        max = 7
+        */
+        
         if(matrix.length==0||matrix[0].length==0)
             return 0;
+        
+        int maxEver = 0;
+        
         int[] heights = new int[matrix[0].length];
-        int maxAreaEver = 0;
         for(int i=0;i<matrix.length;i++){
             updateHeight(heights, matrix, i);
             Stack<Integer> stack = new Stack();
-            for(int a=0;a<heights.length;a++){
-                //if im less then im termianting everyone who has come before who has higher height
-                while(!stack.isEmpty()&&heights[a]<heights[stack.peek()]){
-                    int prevHeight = heights[stack.pop()];
-                    int width = stack.isEmpty()?a:a-stack.peek()-1;
-                    maxAreaEver = Math.max(maxAreaEver, prevHeight*width);
+            int iter = 0;
+            while(iter<heights.length){
+                if(stack.isEmpty()||heights[iter]>=heights[stack.peek()]){
+                    stack.push(iter++);
+                }else{
+                    int pos = stack.pop();
+                    int height = heights[pos];
+                    int width = stack.isEmpty()?iter:iter-stack.peek()-1;//HERE, if the stack is empty then it extends from current iterator to the beginning
+                    maxEver = Math.max(maxEver, height*width);
                 }
-                stack.push(a);
             }
-            
             while(!stack.isEmpty()){
-                int index = stack.pop();
-                int prevHeight = heights[index];
-                int width = stack.isEmpty()?heights.length:heights.length-stack.peek()-1;
-                maxAreaEver = Math.max(maxAreaEver, prevHeight*width);
+                int pos = stack.pop();
+                int height = heights[pos];
+                int width = stack.isEmpty()?heights.length:heights.length-1-stack.peek();//HERE, it extends from the end to the beginning if thr stack is empty because 
+                maxEver = Math.max(maxEver, height*width);
             }
+            //pop off everything
         }
-        return maxAreaEver;
+        
+        return maxEver;
+        
     }
     
-    public void updateHeight(int[] heights, char[][] matrix, int level){
+    //updates the heighy using the row in matrix
+    public void updateHeight(int[] height, char[][] matrix, int row){
         for(int i=0;i<matrix[0].length;i++){
-            int val = matrix[level][i]-'0';
-            if(val==0){
-                heights[i] = 0;
-            }else
-                heights[i]++;
+            if(matrix[row][i]=='0')
+                height[i] = 0;
+            else
+                height[i]++;
         }
     }
 }
