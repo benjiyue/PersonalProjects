@@ -1,69 +1,60 @@
 public class Solution {
 	public List<Integer> findSubstring(String s, String[] words) {
-		//it's a sliding window approach, first map all the words to their count then count how many uniques there are.
+		/*
+        sliding window with a map:word->count/occurences
+
+        slide the window up to the words.length*word[0].length and for each length deduct a count if it exists
+        then if the count is 0 then return the left pointer. Else get rid of the left and consider the right. 
+		 */
+
+		Map<String, Integer> orig = new HashMap();
+		int origCount = 0;
+		for(String temp:words){
+			if(orig.containsKey(temp))
+				orig.put(temp, orig.get(temp)+1);
+			else
+				orig.put(temp, 1);
+			origCount++;
+		}
+	
+		
 		List<Integer> res = new LinkedList();
-		if(words.length==0||words[0].length()*words.length>s.length())
-			return res;
-		Map<String, Integer> dictMap = new HashMap();
-
-		for(String i:words){
-			if(dictMap.containsKey(i))
-				dictMap.put(i, dictMap.get(i)+1);
-			else{
-				dictMap.put(i, 1);
-			}
-		}
-
-		int oneWord = words[0].length();
-		for(int offset=0;offset<words[0].length();offset++){
-			Map<String, Integer> curMap = new HashMap();
-			int l = offset;
-			int r = offset;
-			int exactCountMatches = 0;
-			while(r+oneWord<=s.length()){
-				String nextWord = s.substring(r, r+oneWord);
-				if(dictMap.containsKey(nextWord)){
-					if(curMap.containsKey(nextWord))
-						curMap.put(nextWord, curMap.get(nextWord)+1);
-					else{
-						curMap.put(nextWord, 1);
-					}
-
-					if(curMap.get(nextWord)==dictMap.get(nextWord)){
-						exactCountMatches++;
-					}
-					while(curMap.get(nextWord)>dictMap.get(nextWord)){
-						//remove left words until in line
-						String left = s.substring(l, l+oneWord);
-						l+=oneWord;
-						int already = curMap.get(left);
-						curMap.put(left, already-1);
-                        if(dictMap.get(left)==already)
-                            exactCountMatches--;
-					}
-					//you'll bring the nextWord count to be==dictMap
-					if(exactCountMatches==dictMap.size()){
-						res.add(l);
-						String left = s.substring(l, l+oneWord);
-						int already = curMap.get(left);
-						curMap.put(left, already-1);
-						exactCountMatches--;
-						l+=oneWord;
-					}
-					r+=oneWord;
-				}else{
-					curMap.clear();
-					l = r+oneWord;
-					r=l;
-					exactCountMatches = 0;
-				}
-			}
-
-		}
+        for(int i=0;i<words[0].length();i++){
+            
+            Map<String, Integer> map = new HashMap(orig);
+	    	int count = origCount;
+            
+    		int left = 0+i;
+    		int right = 0+i;
+    
+    		while(right+words[0].length()<=s.length()){
+    			if(count==0)
+    				res.add(left);
+    			if(right>=words[0].length()*words.length){
+    				//put left word back
+    				String leftWord = s.substring(left, left+words[0].length());
+    				if(map.containsKey(leftWord)){
+    					int cur = map.get(leftWord);
+    					if(cur>=0)
+    						count++;
+    					map.put(leftWord, cur+1);
+    				}
+    				left+=words[0].length();
+    			}
+    
+    			//get rid of right word
+    			String temp = s.substring(right, right+words[0].length());
+    			if(map.containsKey(temp)){
+    				int current = map.get(temp);
+    				map.put(temp, current-1);
+    				if(current>0)
+    					count--;
+    			}
+    			right+=words[0].length();
+    		}
+    		if(count==0)
+    			res.add(left);
+        }
 		return res;
-		//then start at each possible offset from the beggining to the length of each of the words. 
-		//create anew map and start the sliding window
-		//ask if next substring is in the map if yes then process it and update the currentMap, if equal to the count of dictionary mapping, then increment counter, if counter==mapCounter then this is a result and add left pointer, then move left pointer
-		//else if not in map reset map and put left to right+offset
 	}
 }
