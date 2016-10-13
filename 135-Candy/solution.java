@@ -1,26 +1,32 @@
 public class Solution {
     public int candy(int[] ratings) {
-        //i'm giving him the max(already, and other person's candy+1)
-        int[] candies = new int[ratings.length];
-        Arrays.fill(candies, 1);
-        for(int i=1;i<ratings.length;i++){
+        /*
+        idea is to iterate through and at each point if im greater than both my sides then my value is max(left, right)+1
+        else im greater than 1 side and my value is +1 of that side
+        else im less than both so just remain 1
+        */
+        
+        if(ratings.length==0)
+            return 0;
+        
+        int[] candy = new int[ratings.length];
+        Arrays.fill(candy, 1);
+        
+        //left to right
+        for(int i = 1;i<candy.length;i++){
             if(ratings[i]>ratings[i-1])
-                candies[i] = Math.max(candies[i-1]+1, candies[i]);
+                candy[i] = candy[i-1]+1;
         }
+        
+        //right to left
         for(int i=ratings.length-2;i>=0;i--){
-            if(ratings[i]>ratings[i+1])
-                candies[i] = Math.max(candies[i+1]+1, candies[i]);
+            if(ratings[i]>ratings[i+1]){
+                candy[i] = Math.max(candy[i], candy[i+1]+1);
+            }
         }
         int sum = 0;
-        for(int i=0;i<ratings.length;i++)
-            sum+=candies[i];
-        
+        for(int i:candy)
+            sum+=i;
         return sum;
-        
-        /*
-         1,2,3,1,2
-        [3,4,5,1,3]
-         1,2,3,1,2
-        */
     }
 }
