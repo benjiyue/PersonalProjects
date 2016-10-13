@@ -1,23 +1,23 @@
 public class Solution {
     public int jump(int[] nums) {
-        if(nums.length<2)
+        /*
+        bfs idea you first start at the 0th index and you can jump nums[0] steps so that's the farthest you can go, then iterate up one at a time up to that maxLength and see if anything along the way i+nums[i] can jump even farther than where you initially could jump to if so continue the while loop else you cannot jump farther and you're stuck so return 
+        */
+        if(nums.length==1)
             return 0;
-        //idea is to jump as for as possible for your range thus far, so you always have to take the first jump then anchor the right position, the iterate for each position in the range and see where is the farthest i can get from things in this range and then iterate over things in the range from my end to the new longest range
-        
-        //so idea is that each time i have two anchors for where i can be.
-        //inclusive
-        int lowRange = 1;
-        int highRange = nums[0];
+        int iter = 1;
+        int curMax = nums[0];
         int steps = 1;
-        while(highRange<nums.length-1){
-            int newMax = 0;
-            for(int i=lowRange;i<=highRange;i++){
-                newMax = Math.max(newMax, nums[i]+i);
+        while(true){
+            if(curMax>=nums.length-1)
+                return steps;
+            int nextMax = curMax;
+            while(iter<=curMax){
+                nextMax = Math.max(nextMax, iter+nums[iter]);
+                iter++;
             }
-            lowRange = highRange+1;
-            highRange = newMax;
+            curMax = nextMax;
             steps++;
         }
-        return steps;
     }
 }
