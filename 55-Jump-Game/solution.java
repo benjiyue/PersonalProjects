@@ -19,4 +19,4 @@ public class Solution {
         return maxPos>=nums.length-1;
         
     }
-}
+}//IM EDITING VIA THE FIRSTBRANCH
